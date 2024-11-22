@@ -1,0 +1,31 @@
+import { ISocketClient } from "@types";
+import { Application, tssclass } from "@tsss";
+
+@tssclass("@name")
+export class @name extends Application {
+
+    /**
+     * 服务器启动完成
+     * @returns 返回服务器消息协议的类型
+     */
+    protected startup() {
+        return Application.ProtocolType.ARRAY_BUFFER;
+    }
+
+    /**
+     * 发生客户端连接服务器时的回调
+     * @param socketClient 连接服务器的客户端
+     */
+    protected onConnect(socketClient: ISocketClient) {
+        //在这里设置心跳
+        // socketClient.onHeartbeat("心跳消息名", 心跳超时时间);
+    }
+    /**服务器关闭时的回调 */
+    protected onClose() {}
+    protected onHeaders(headers: string[], request: WebSocket) {}
+    /**
+     * 服务器发生错误时的回调
+     * @param error 错误信息
+     */
+    protected onError(error: Error) {}
+}

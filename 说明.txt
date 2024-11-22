@@ -1,0 +1,68 @@
+nodejs 原生并不支持类型与 typescript 中的 import 和 export 模块导入和导出，需要安装相应的模块进行转换：
+    安装模块      npm install --save-dev typescript @babel/cli @babel/core @babel/node @babel/plugin-proposal-class-properties @babel/plugin-proposal-decorators @babel/preset-env
+
+安装完这些依赖模块后，还需要在根目录创建 .babelrc 文件，并进行配置：
+    .babelrc 文件配置：  
+                {
+                    "presets": [
+                        ["@babel/preset-env", {"targets": {"node": "current"}}]
+                    ],
+                    "plugins": [
+                        ["@babel/plugin-proposal-decorators", {"legacy": true}],
+                        ["@babel/plugin-proposal-class-properties", {"loose": true}]
+                    ]
+                }
+
+运行启动项目时，不能再使用 node <文件路径名>  这种方式，而是要换成 babel-node <文件路径名> 这种方式。
+
+配置 nodejs typescript 开发环境：
+    安装 tsc 编译模块，安装命令：npm install -g typescript @types/node
+    在初始化一个 nodejs 项目后（初始化命令：npm init -y），在项目本地安装 nodejs 的类型文件，安装命令：npm --save-dev typescript @types/node，
+    然后采用命令：tsc --init 创建一个 tsconfig.json 编译配置文件。
+    同时，作为 nodejs 项目，还需要安装 对应版本的 nodejs 类型声明文件，使用命令：npm --save-dev @types/node@14.15.0 进行安装，14.15.0 是我本地 nodejs 的版本。
+
+
+---------------------------------------------框架使用说明----------------------------------------------------------
+
+框架运行：
+    首先需要先对项目进行设置，用 npm run set 命令可以对项目进行设置，该命令会引导你设置项目名称，并在src目录创建一个server.ts文件，这是服务器的入口文件。
+
+    编写完代码后，需要使用 npm run build 进行编译。
+    然后以 npm run start 运行服务器代码。
+    或者以 npm run open 命令同时执行编译和运行。
+
+多线程的使用：
+    首先要执行命令 npm run open_thread 开启多线成功能。
+    然后在src目录下创建一个存放线程执行js脚本文件的目录，例如 ./src/thread
+    之后在项目的配置文件里配置路径信息，配置文件路径位于 ./config/config.json，在配置文件里把上面的 ./src/thread 路径复制到配置文件中的 thread 字段里
+    在存放多线程脚本文件的目录下创建相应的脚步文件，一定要是js文件，不能是ts文件，例如 ./src/thread/testThread.js
+    之后在该脚本文件里面创建一个与文件名同名的函数，把该函数导出即可，然后你就可以在该函数内部实现你要在该线程处理的任务，然后把结果返回
+
+   如何调度线程：
+        在 system 类里通过调用schedule函数来执行多线程，该函数的参数需要传入一个回调函数，这个回调函数是用于接收多线程脚本执行后返回的数据，返回的数据就在该函数的参数表里
+        schedule 函数也可以传入参数到多线程脚本里，例如在 testThread.js 文件里实现如下：
+
+        module.exports.testThread = function(x, y) {
+            console.log("x and y", x, y);
+            return x + y;
+        }
+
+        上面函数中的x，y就是从schedule函数里面传过来的，例如我在 TestSystem.ts 文件里的 execute 函数里调用了 schedule 函数，如下：
+        this.schedule(this.testThread, 0, 100, 200);
+        上面这句代码表示，此线程的优先级为 0，传入了 100 和 200 两个参数给线程执行函数。
+        相应的，在 TestSystem.ts 文件里增加了一个名为 testThread 的函数，如下：
+
+        testThread(data: number) {
+            console.log("这是一个线程执行结果返回的数据", data); //这里输出的是300， 就是上面线程执行加法运算后返回的数据
+        }
+
+        上面一切都完成之后，就可以在 TestSystem.ts 文件的任何地方调用（事实上在任何一个继承了 System 类的子类里调用都能执行） dispatch 调度函数让线程跑起来，如下：
+        this.dispatch()；
+
+    如何关闭项目中的线程功能：
+        使用 npm run stop_thread 即可关闭多线程功能，之后运行就不会有多线程功能了
+        不过要注意项目中是否使用了线程来实现某些功能，以免关闭后导致运行错误
+
+注意：nodejs多线程无法传递复杂的数据类型，例如类的对象是无法传递的，因为nodejs多线程无法进行序列化和反序列化，克隆数据会出错。如果多线程运行错误，请检查数据传递是否合规。
+
+
