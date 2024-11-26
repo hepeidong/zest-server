@@ -18,10 +18,10 @@ export class TestSystem extends System {
         Debug.log(notification.toString());
         notification.setCode();
         const model = this.getModel("user", UserModel);
-        model.getUserAll().then(data => {
-            notification.setData(data);
-            notification.sendData();
-        });
+        await model.insertUserData(1002, "李四", 15, 180000);
+        const data = await model.getUserAll();
+        notification.setData(data);
+        notification.sendData();
         // return this.schedule(this.testThread, 0, 100, 200).dispatch();
         return this;
     }

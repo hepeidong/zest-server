@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Application } from "../application/Application";
+import { StringUtil } from "../../../utils";
 /**
  * 作者：何沛东
  *
@@ -26,6 +27,11 @@ export class Model {
     remove() {
         this.onRemove();
     }
+    /**
+     * 数据库查询
+     * @param sql sql语句
+     * @returns
+     */
     query(sql) {
         return __awaiter(this, void 0, void 0, function* () {
             const connection = yield Application.getInstance().connection();
@@ -40,6 +46,15 @@ export class Model {
             });
             return result;
         });
+    }
+    /**
+     * 配置sql语句
+     * @param sql
+     * @param args
+     * @returns
+     */
+    formatSql(sql, ...args) {
+        return StringUtil.format(sql, ...args);
     }
     /**数据库表模型被调用时，该函数会在其它函数之前被调用 */
     onCreate() { }

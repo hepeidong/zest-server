@@ -27,10 +27,10 @@ let TestSystem = class TestSystem extends System {
             Debug.log(notification.toString());
             notification.setCode();
             const model = this.getModel("user", UserModel);
-            model.getUserIdAll().then(data => {
-                notification.setData(data);
-                notification.sendData();
-            });
+            yield model.insertUserData(1002, "李四", 15, 180000);
+            const data = yield model.getUserAll();
+            notification.setData(data);
+            notification.sendData();
             // return this.schedule(this.testThread, 0, 100, 200).dispatch();
             return this;
         });

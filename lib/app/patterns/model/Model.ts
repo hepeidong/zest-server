@@ -1,6 +1,7 @@
 import { QueryOptions } from "mysql";
 import { Application } from "../application/Application";
 import { IModel } from "@types";
+import { StringUtil } from "../../../utils";
 
 /**
  * 作者：何沛东
@@ -25,6 +26,11 @@ export class Model<SQL_T> implements IModel {
         this.onRemove();
     }
 
+    /**
+     * 数据库查询
+     * @param sql sql语句
+     * @returns 
+     */
     protected async query(sql: string|QueryOptions) {
         const connection = await Application.getInstance().connection();
         const result = await new Promise<any>((resolve, reject) => {
@@ -37,6 +43,16 @@ export class Model<SQL_T> implements IModel {
             });
         });
         return result;
+    }
+
+    /**
+     * 配置sql语句
+     * @param sql 
+     * @param args 
+     * @returns 
+     */
+    protected formatSql(sql: string, ...args: any[]) {
+        return StringUtil.format(sql, ...args);
     }
 
     /**数据库表模型被调用时，该函数会在其它函数之前被调用 */

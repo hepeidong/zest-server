@@ -6,13 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Model, tssclass, tssql } from "../../lib";
 let UserModel = class UserModel extends Model {
-    getUserIdAll() {
-        return this.query(this.sql.userIdAll);
+    getUserAll() {
+        return this.query(this.sql.userAll);
+    }
+    insertUserData(...args) {
+        return this.query(this.formatSql(this.sql.insertData, ...args));
     }
 };
 UserModel = __decorate([
     tssclass("user"),
-    tssql("userIdAll", "SELECT * FROM user"),
-    tssql("insertData", `INSERT INTO user(userId, userName, userLevel, exp) VALUE(1001, "张三", 20, 202400)`)
+    tssql("userAll", "SELECT * FROM user"),
+    tssql("insertData", `INSERT INTO user(userId, userName, userLevel, exp) VALUE(%s, "%s", %s, %s)`)
 ], UserModel);
 export { UserModel };
