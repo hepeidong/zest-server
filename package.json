@@ -25,7 +25,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "open": "tsc && node temp/parseFile.js && babel-node dist/src/server.js",
     "babel": "babel dist -d dist",
-    "build": "tsc",
+    "build": "tsc && node temp/parseFile.js",
     "start": "babel-node dist/src/server.js",
     "open_thread": "node temp/openThread.js",
     "stop_thread": "node temp/stopThread.js",

@@ -101,7 +101,7 @@ export function getClassName(objOrCtor) {
     }
     return '';
 }
-const value = (() => {
+export const value = (() => {
     const descriptor = {
         value: undefined,
         enumerable: false,
@@ -116,7 +116,7 @@ const value = (() => {
         descriptor.value = undefined;
     };
 })();
-export function setup(tag, table, allowExist) {
+function setup(tag, table, allowExist) {
     return function (id, constructor) {
         if (constructor.prototype.hasOwnProperty(tag)) {
             delete table[constructor.prototype[tag]];
@@ -143,7 +143,7 @@ export function setup(tag, table, allowExist) {
  * @param classId
  * @param constructor
  */
-export const _setClassId = setup('__cid__', _idToClass, false);
+const _setClassId = setup('__cid__', _idToClass, false);
 const doSetClassName = setup('__classname__', _nameToClass, true);
 /**
  * @en Registers a class by specified name manually.

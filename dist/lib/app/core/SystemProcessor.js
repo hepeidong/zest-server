@@ -45,8 +45,7 @@ export class SystemProcessor {
             }
         }
         else {
-            const pool = new ObjectPool();
-            this._poolMap.set(systemName, pool);
+            this._poolMap.set(systemName, new ObjectPool());
             this.createSystem(systemName, notification);
         }
     }
@@ -58,8 +57,9 @@ export class SystemProcessor {
         }
     }
     execute(system, notification) {
-        system.onStart();
+        system.open();
         system.execute(notification).then(sys => {
+            sys.remove();
             this._poolMap.get(sys.name).put(sys);
         }).catch(error => {
             Debug.error(error);

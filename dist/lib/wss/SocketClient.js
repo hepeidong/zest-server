@@ -5,10 +5,11 @@ import { Application } from "../app";
 import { logs } from "../../config";
 import { BufferIO } from "./BufferIO";
 import { Signal } from "../utils";
+import { ProtocolFactory } from "./ProtocolFactory";
 export class SocketClient {
     constructor(server, protocol) {
         this._server = server;
-        this._protocol = protocol;
+        this._protocol = ProtocolFactory.create(protocol);
         this._id = UUID.randomUUID();
         this._heartbeatEvent = "";
         this._timeoutInterval = 0;
@@ -52,13 +53,8 @@ export class SocketClient {
             //当服务器向客户端转发数据时，数据格式为 “消息名字符串|错误码字符串|具体的数据字符串”
             const proxyName = str.split("|")[0];
             this.timeoutTaskHandle(proxyName);
-            let result;
-            if (this._protocol === Application.ProtocolType.ARRAY_BUFFER) {
-                result = this.stringToBianry(str);
-            }
-            else if (this._protocol === Application.ProtocolType.JSON) {
-                result = str;
-            }
+            let result = this._protocol.encode(str);
+            // const uint8Array = this._encoder.encode(str);
             this.server.send(result, error => {
                 if (error) {
                     Debug.error("消息发送错误：", error);
@@ -66,18 +62,10 @@ export class SocketClient {
             });
         }
     }
-    stringToBianry(str) {
-        // const uint8Array = this._encoder.encode(str);
-        // return uint8Array.buffer;
-        return this._bufferIO.stringToArrayBuffer(str);
-    }
     onMessageHandle(data, isBinary) {
         if (isBinary) {
-            let str;
-            if (this._protocol === Application.ProtocolType.ARRAY_BUFFER) {
-                // str = this._decoder.decode(buffer, {stream: true});
-                str = this._bufferIO.arrayBufferToString(data);
-            }
+            let str = this._protocol.decode(data);
+            // let str = this._decoder.decode(buffer, {stream: true});
             Application.getInstance().handleMessage(this, str);
             if (this._messageSignal.active) {
                 this._messageSignal.dispatch();

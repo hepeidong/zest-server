@@ -6,6 +6,7 @@ import { Debug } from "../../../debug";
 import { setParentType } from "../../../decorators";
 import { ScriptLoader } from "../../util/ScriptLoader";
 import { ThreadProcessor } from "../../core/ThreadProcessor";
+import { ModelProcessor } from "../../core/ModelProcessor";
 export class Application {
     constructor() {
         Application._instance = this;
@@ -26,6 +27,19 @@ export class Application {
     }
     dispatchTasks() {
         ThreadProcessor.getInstance().dispatchTasks();
+    }
+    connection() {
+        return ModelProcessor.getInstance().connetion();
+    }
+    getModel(model, type) {
+        return ModelProcessor.getInstance().getModel(model, type);
+    }
+    putModel(model) {
+        ModelProcessor.getInstance().putModel(model);
+    }
+    /**创建数据库连接 */
+    cteateConnection() {
+        ModelProcessor.getInstance().createConnection(config.database);
     }
     init() {
         ScriptLoader.getInstance().loadScript();

@@ -119,7 +119,7 @@ export function getClassName (objOrCtor: any): string {
     return '';
 }
 
-const value = (() => {
+export const value = (() => {
     const descriptor: PropertyDescriptor = {
         value: undefined,
         enumerable: false,
@@ -135,7 +135,7 @@ const value = (() => {
     };
 })();
 
-export function setup (tag: string, table: Record<string | number, any>, allowExist: boolean) {
+function setup (tag: string, table: Record<string | number, any>, allowExist: boolean) {
     return function (id: any, constructor: Function) {
         if (constructor.prototype.hasOwnProperty(tag)) {
             delete table[constructor.prototype[tag]];
@@ -162,7 +162,7 @@ export function setup (tag: string, table: Record<string | number, any>, allowEx
  * @param classId
  * @param constructor
  */
-export const _setClassId = setup('__cid__', _idToClass, false);
+const _setClassId = setup('__cid__', _idToClass, false);
 
 const doSetClassName = setup('__classname__', _nameToClass, true);
 

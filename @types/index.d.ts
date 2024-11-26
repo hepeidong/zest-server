@@ -1,3 +1,4 @@
+import { PoolConfig, PoolConnection } from "mysql";
 import WebSocket, { ServerOptions, WebSocketServer } from "ws";
 
 /**socket消息的数据结构 */
@@ -130,6 +131,9 @@ interface IApplication {
     sendNotice(notification: INotification): void;
     addTask(task: IWorkerTask): void;
     dispatchTasks(): void;
+    connection(): Promise<PoolConnection>;
+    getModel<T extends IModel>(model: string, type: new () => T): T;
+    putModel(model: IModel): void;
 }
 
 interface INotifier {
@@ -138,8 +142,10 @@ interface INotifier {
 
 interface ISystem {
     readonly name: string;
-    /**功能系统开始执行前调用，在execute之前被调用，可以在这里做一些必要的初始化，每次功能系统被执行前都会调用此函数 */
-    onStart(): void;
+    /**系统开始被执行，外部无需自行调用此函数 */
+    open(): void;
+    /**系统执行完毕后，被移除，外部无需自行调用此函数 */
+    remove(): void;
     /**
      * 异步执行消息处理逻辑，通过返回一个自身对象来告诉系统结束消息处理
      * @param notification 
@@ -200,4 +206,22 @@ interface IWorkerTask {
 type thread_result = {
     id: string,
     args: any
+}
+
+interface IProtocol {
+    encode(str: string): any;
+    decode(data: any): string;
+}
+
+interface IModel {
+    readonly name: string;
+    init(name: string): void;
+    remove(): void;
+}
+
+interface IModelProcessor {
+    createConnection(config: PoolConfig): void;
+    connetion(): Promise<PoolConnection>;
+    getModel<T extends IModel>(model: string, type: new () => T): T;
+    putModel(model: IModel): void;
 }

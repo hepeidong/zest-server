@@ -1,4 +1,4 @@
-import { IApplication, INotification, ISocketClient, ISocketServer, IWorkerTask } from "@types";
+import { IApplication, IModel, INotification, ISocketClient, ISocketServer, IWorkerTask } from "@types";
 import { MessageProcessor } from "../../core/MessageProcessor";
 import { SystemProcessor } from "../../core/SystemProcessor";
 import { SocketServer } from "../../../wss/SocketServer";
@@ -7,6 +7,7 @@ import { Debug } from "../../../debug";
 import { setParentType } from "../../../decorators";
 import { ScriptLoader } from "../../util/ScriptLoader";
 import { ThreadProcessor } from "../../core/ThreadProcessor";
+import { ModelProcessor } from "../../core/ModelProcessor";
 
 export class Application implements IApplication {
     private _server: ISocketServer;
@@ -38,6 +39,23 @@ export class Application implements IApplication {
     public dispatchTasks() {
         ThreadProcessor.getInstance().dispatchTasks();
     }
+
+    public connection() {
+        return ModelProcessor.getInstance().connetion();
+    }
+
+    public getModel<T extends IModel>(model: string, type: new () => T): T {
+        return ModelProcessor.getInstance().getModel(model, type);
+    }
+
+    public putModel(model: IModel): void {
+        ModelProcessor.getInstance().putModel(model);
+    }
+
+    /**创建数据库连接 */
+    protected cteateConnection() {
+        ModelProcessor.getInstance().createConnection(config.database);
+    } 
 
     private init() {
         ScriptLoader.getInstance().loadScript();

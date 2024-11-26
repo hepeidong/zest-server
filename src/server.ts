@@ -1,6 +1,9 @@
 import { ISocketClient } from "@types";
-import { Application, tssclass } from "@tsss";
+import { Application, Debug, tssclass } from "@tsss";
 import { EventEnum } from "./message/EventEnum";
+import { createConnection } from "mysql";
+import { config } from "../config";
+
 
 @tssclass("GameServer")
 export class GameServer extends Application {
@@ -10,7 +13,31 @@ export class GameServer extends Application {
      * @returns 返回服务器消息协议的类型
      */
     protected startup() {
-        return Application.ProtocolType.ARRAY_BUFFER;
+        // this.testDatabase();
+        this.cteateConnection();
+        return Application.ProtocolType.ARRAY_BUFFER; 
+    }
+
+    private testDatabase() {
+        //连接数据库
+        const connection = createConnection(config.database);
+        connection.connect((err) => {
+            if (err) {
+                Debug.error("数据库连接失败：", err);
+                return;
+            }
+            Debug.log("数据库连接成功！");
+        });
+        const sql1 = `INSERT INTO user(userId, userName, userLevel, exp) VALUE(1001, "张三", 20, 202400)`;
+        const sql2 = `SELECT userId FROM user`;
+        connection.query(sql1, (err, result) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log(result);
+        });
+        connection.end();
     }
 
     /**

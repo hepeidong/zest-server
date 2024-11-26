@@ -15,6 +15,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { tssclass, System, Debug } from "../../lib";
 import { SystemEnum } from "./SystemEnum";
+import { UserModel } from "../model/UserModel";
 let TestSystem = class TestSystem extends System {
     onStart() {
     }
@@ -25,7 +26,11 @@ let TestSystem = class TestSystem extends System {
         return __awaiter(this, void 0, void 0, function* () {
             Debug.log(notification.toString());
             notification.setCode();
-            notification.sendData();
+            const model = this.getModel("user", UserModel);
+            model.getUserIdAll().then(data => {
+                notification.setData(data);
+                notification.sendData();
+            });
             // return this.schedule(this.testThread, 0, 100, 200).dispatch();
             return this;
         });

@@ -7,7 +7,7 @@ export class Notifier implements INotifier {
         this.app = Application.getInstance();
     }
 	
-    sendNotice(notification: INotification): void {
+    public sendNotice(notification: INotification): void {
         this.app.sendNotice(notification);
     }
 }

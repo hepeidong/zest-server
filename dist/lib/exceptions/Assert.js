@@ -1,6 +1,7 @@
 import { Debug } from "../debug";
 import { GetMessageClassException } from "./GetMessageClassException";
 import { GetSystemClassException } from "./GetSystemClassException";
+import { GetModelClassException } from "./GetModelClassException";
 const _excetions = {};
 export class Assert {
     static handle(exceptionType, condition, message) {
@@ -24,7 +25,9 @@ export class Assert {
     (function (Type) {
         Type["GetMessageClassException"] = "GetMessageClassException";
         Type["GetSystemClassException"] = "GetSystemClassException";
+        Type["GetModelClassException"] = "GetModelClassException";
     })(Type = Assert.Type || (Assert.Type = {}));
 })(Assert || (Assert = {}));
 _excetions[Assert.Type.GetMessageClassException] = GetMessageClassException;
 _excetions[Assert.Type.GetSystemClassException] = GetSystemClassException;
+_excetions[Assert.Type.GetModelClassException] = GetModelClassException;

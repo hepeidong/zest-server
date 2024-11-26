@@ -53,3 +53,25 @@ export function tssclass() {
 export function setParentType(key: string, type: Function) {
     parentType[key] = type;
 }
+
+function setTag(tag: string) {
+    return function (key: string, sql: string, constructor: Function) {
+        if (!constructor.prototype.hasOwnProperty(tag)) {
+            const obj = {};
+            obj[key] = sql;
+           js.value(constructor.prototype, tag, obj);
+        }
+        else {
+            const value = constructor.prototype[tag];
+            value[key] = sql;
+        }
+    };
+}
+
+const setSql = setTag("_sqlMap");
+
+export function tssql(sqlKey: string, sql: string) {
+    return function (constructor: Function) {
+        setSql(sqlKey, sql, constructor);
+    }
+}
